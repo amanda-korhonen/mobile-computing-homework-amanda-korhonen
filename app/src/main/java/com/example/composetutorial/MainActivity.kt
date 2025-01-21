@@ -31,7 +31,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.example.composetutorial.ui.theme.ComposeTutorialTheme
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.systemBarsPadding
+import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -57,8 +57,7 @@ data class Message(val author: String, val body: String)
 
 @Composable
 fun MessageCard(msg: Message) {
-    // .systemBarsPadding() from AI
-    Row(modifier = Modifier.padding(all = 8.dp).systemBarsPadding()) {
+    Row(modifier = Modifier.padding(all = 8.dp)) {
         Image(
             painter = painterResource(R.drawable.profile_picture),
             contentDescription = null,
@@ -75,8 +74,6 @@ fun MessageCard(msg: Message) {
         val surfaceColor by animateColorAsState(
             if (isExpanded) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.surface,
         )
-
-
 
         // We toggle the isExpanded variable when we click on this Column
         Column (modifier = Modifier.clickable { isExpanded = !isExpanded }) {
@@ -110,10 +107,11 @@ fun MessageCard(msg: Message) {
 
 @Composable
 fun Conversation(messages: List<Message>) {
-    // .systemBarsPadding() from AI
-    LazyColumn (modifier = Modifier.systemBarsPadding()) {
-        items(messages) { message ->
-            MessageCard(message)
+    Scaffold { paddingValues ->
+        LazyColumn (modifier = Modifier.padding(paddingValues)) {
+            items(messages) { message ->
+                MessageCard(message)
+            }
         }
     }
 }
