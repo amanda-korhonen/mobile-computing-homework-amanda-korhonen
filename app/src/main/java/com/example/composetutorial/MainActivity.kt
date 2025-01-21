@@ -36,6 +36,39 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.navigation.NavHostController
+import androidx.navigation.compose.NavHost
+import androidx.navigation.compose.rememberNavController
+
+@Composable
+fun MyAppNavHost(
+    modifier: Modifier = Modifier,
+    navController: NavHostController = rememberNavController(),
+    ) {
+    NavHost(
+        modifier = modifier,
+        navController = navController,
+        startDestination = "mainScreen"
+    ) {
+        composable<"mainScreen"> {
+            MainScreen(
+                onNavigateToSettings = { navController.navigate("settings") }
+            )
+        }
+        composable<FriendsList> { FriendsListScreen(/*...*/) }
+    }
+}
+
+@Composable
+fun Conversation(messages: List<Message>) {
+    Scaffold { paddingValues ->
+        LazyColumn (modifier = Modifier.padding(paddingValues)) {
+            items(messages) { message ->
+                MessageCard(message)
+            }
+        }
+    }
+}
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -45,8 +78,9 @@ class MainActivity : ComponentActivity() {
         setContent {
             ComposeTutorialTheme {
                 Surface(modifier = Modifier.fillMaxSize()) {
+                    val navController = rememberNavController()
                     //MessageCard(Message("Android", "Jetpack Compose"))
-                    Conversation(SampleData.conversationSample)
+                    //Conversation(SampleData.conversationSample)
                 }
             }
         }
@@ -105,16 +139,6 @@ fun MessageCard(msg: Message) {
     }
 }
 
-@Composable
-fun Conversation(messages: List<Message>) {
-    Scaffold { paddingValues ->
-        LazyColumn (modifier = Modifier.padding(paddingValues)) {
-            items(messages) { message ->
-                MessageCard(message)
-            }
-        }
-    }
-}
 
 @Preview
 @Composable
