@@ -1,5 +1,6 @@
 package com.example.composetutorial
 
+import SampleData
 import android.content.res.Configuration
 import android.os.Bundle
 import androidx.activity.ComponentActivity
@@ -31,13 +32,21 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.example.composetutorial.ui.theme.ComposeTutorialTheme
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Box
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material.icons.rounded.Settings
+import androidx.compose.material3.Button
+import androidx.compose.material3.Icon
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
+import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 
 @Composable
@@ -50,21 +59,58 @@ fun MyAppNavHost(
         navController = navController,
         startDestination = "mainScreen"
     ) {
-        composable<"mainScreen"> {
-            MainScreen(
-                onNavigateToSettings = { navController.navigate("settings") }
+        composable("mainScreen") {
+            Conversation(
+                onNavigateToSettings = { navController.navigate("settings") },
+                SampleData.conversationSample
             )
         }
-        composable<FriendsList> { FriendsListScreen(/*...*/) }
+        composable("settings") {
+            Settings(
+                onNavigateBack = {navController.popBackStack("mainScreen", false)}
+            )
+        }
     }
 }
 
 @Composable
-fun Conversation(messages: List<Message>) {
+fun Settings(onNavigateBack: () -> Unit) {
     Scaffold { paddingValues ->
-        LazyColumn (modifier = Modifier.padding(paddingValues)) {
-            items(messages) { message ->
-                MessageCard(message)
+        Box (modifier = Modifier.fillMaxSize().padding(paddingValues)) {
+            Button(
+                onNavigateBack,
+                modifier = Modifier
+                    .align(Alignment.TopStart)
+                    .padding(16.dp)
+            ){
+                Icon(
+                    Icons.AutoMirrored.Filled.ArrowBack,
+                    contentDescription = "Go back"
+                )
+            }
+        }
+    }
+}
+
+@Composable
+fun Conversation(onNavigateToSettings: () -> Unit, messages: List<Message>) {
+    Scaffold { paddingValues ->
+        Box(modifier = Modifier.fillMaxSize()) {
+            LazyColumn (modifier = Modifier.padding(paddingValues)) {
+                items(messages) { message ->
+                    MessageCard(message)
+                }
+            }
+            Button(
+                onClick = onNavigateToSettings,
+                modifier = Modifier
+                    .align(Alignment.BottomEnd)
+                    .padding(16.dp)
+            ){
+                Icon(
+                    Icons.Rounded.Settings,
+                    contentDescription = "Settings button",
+                )
             }
         }
     }
@@ -79,8 +125,7 @@ class MainActivity : ComponentActivity() {
             ComposeTutorialTheme {
                 Surface(modifier = Modifier.fillMaxSize()) {
                     val navController = rememberNavController()
-                    //MessageCard(Message("Android", "Jetpack Compose"))
-                    //Conversation(SampleData.conversationSample)
+                    MyAppNavHost(navController = navController)
                 }
             }
         }
@@ -139,12 +184,13 @@ fun MessageCard(msg: Message) {
     }
 }
 
-
 @Preview
 @Composable
 fun PreviewConversation() {
     ComposeTutorialTheme {
-        Conversation(SampleData.conversationSample)
+        Conversation(
+            onNavigateToSettings = {},
+            SampleData.conversationSample)
     }
 }
 
