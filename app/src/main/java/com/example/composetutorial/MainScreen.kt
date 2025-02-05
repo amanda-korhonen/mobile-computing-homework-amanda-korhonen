@@ -37,6 +37,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
@@ -50,16 +51,17 @@ import java.io.File
 @Composable
 fun Conversation(onNavigateToSettings: () -> Unit, messages: List<Message>) {
     Scaffold { paddingValues ->
-        Box(modifier = Modifier.fillMaxSize()) {
+        Box(modifier = Modifier.fillMaxSize().padding((paddingValues))) {
             LazyColumn (modifier = Modifier.padding(paddingValues)) {
                 items(messages) { message ->
                     MessageCard(message)
                 }
             }
+
             Button(
                 onClick = onNavigateToSettings,
                 modifier = Modifier
-                    .align(Alignment.BottomEnd)
+                    .align(Alignment.TopEnd)
                     .padding(16.dp)
             ){
                 Icon(
@@ -79,7 +81,6 @@ fun MessageCard(msg: Message) {
         val context = LocalContext.current
         var profilePhoto = File(context.filesDir, "profile.jpg")
         val painter = rememberAsyncImagePainter(profilePhoto)
-
         val userViewModel: UserViewModel = viewModel(
             factory =  UserViewModelFactory(context.applicationContext as Application)
         )
@@ -93,7 +94,8 @@ fun MessageCard(msg: Message) {
             modifier = Modifier
                 .size(40.dp)
                 .clip(CircleShape)
-                .border(1.5.dp, MaterialTheme.colorScheme.primary, CircleShape)
+                .border(2.dp, MaterialTheme.colorScheme.primary, CircleShape)
+
         )
         Spacer(modifier = Modifier.width(8.dp))
 
