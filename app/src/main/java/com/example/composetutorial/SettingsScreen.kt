@@ -94,11 +94,6 @@ fun Settings(onNavigateBack: () -> Unit) {
                         //.padding(35.dp)
                 )
             }
-            Row {
-
-            }
-
-            //Spacer(modifier = Modifier.padding(1.dp))
 
             Row(modifier = Modifier.padding(140.dp, 1.dp)){
                 val painter = if (updateImage) {
