@@ -109,6 +109,7 @@ fun MessageCard(msg: Message) {
         Column (modifier = Modifier.clickable { isExpanded = !isExpanded }) {
             Text(
                 text = user?.userName ?: "", //userName
+
                 color = MaterialTheme.colorScheme.secondary,
                 style = MaterialTheme.typography.titleSmall
             )

@@ -59,12 +59,13 @@ fun Settings(onNavigateBack: () -> Unit) {
         contract =  ActivityResultContracts.PickVisualMedia()) { uri -> uri?.let{ imageUri ->
             val inputStream = context.contentResolver.openInputStream(imageUri)
             val outputFile = File(context.filesDir,"profile.jpg")
-            FileOutputStream(outputFile).use{outputStream ->
+            FileOutputStream(outputFile).use{  outputStream ->
                 inputStream?.copyTo(outputStream)
             }
             imageFile = outputFile
 
             updateImage = !updateImage
+
         }
     }
 

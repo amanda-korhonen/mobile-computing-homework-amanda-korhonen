@@ -22,8 +22,9 @@ class UserViewModel (application: Application) : AndroidViewModel(application) {
         viewModelScope.launch(Dispatchers.IO) {
             userDao.update(user)
         }
-
     }
+
+
 }
 
 class UserViewModelFactory(private val application: Application) : ViewModelProvider.Factory {
