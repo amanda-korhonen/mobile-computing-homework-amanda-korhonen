@@ -73,7 +73,7 @@ fun MainScreen(notificationHelper: NotificationHelper) {
         onResult =  {isEnabled ->
             if (isEnabled) {
                 notificationHelper.createNotification("Test notification",
-                    "This is just a test.");
+                    "This is just a test.")
             }
         }
     )
