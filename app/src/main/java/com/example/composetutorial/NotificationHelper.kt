@@ -7,6 +7,10 @@ import androidx.core.app.ActivityCompat
 import android.Manifest
 import android.app.NotificationChannel
 import android.app.NotificationManager
+import android.app.PendingIntent
+import android.content.Context
+import android.content.Intent
+import androidx.core.app.NotificationCompat
 
 class NotificationHelper (private val activity: Activity){
 
@@ -22,17 +26,34 @@ class NotificationHelper (private val activity: Activity){
         }
     }
 
-    private fun createNotificationChannel() {
+    fun createNotificationChannel() {
         val importance = NotificationManager.IMPORTANCE_HIGH
-        val channel = NotificationChannel("channel_id", "channel_1", importance).apply {
-            description = "Notification channel"
-        }
+        val channel = NotificationChannel("channel_id", "channel_1", importance)
+            .apply {description = "Notification channel"}
+
         val manager = activity.getSystemService(NotificationManager::class.java)
         manager.createNotificationChannel(channel)
     }
 
     fun createNotification(title: String, content: String) {
-        //TODO
+        val notificationManager = activity.getSystemService(Context.NOTIFICATION_SERVICE)
+                as NotificationManager
+
+        val intent = Intent(activity, MainActivity::class.java).apply {
+            flags = Intent.FLAG_ACTIVITY_SINGLE_TOP or Intent.FLAG_ACTIVITY_CLEAR_TOP
+        }
+        val notificationIntent = PendingIntent.getActivity(activity, 0, intent,
+            PendingIntent.FLAG_IMMUTABLE)
+
+        val notification = NotificationCompat.Builder(activity, "channel_id")
+            .setSmallIcon(R.drawable.baseline_notifications_24)
+            .setContentTitle(title)
+            .setContentText(content)
+            .setPriority(NotificationCompat.PRIORITY_HIGH)
+            .setAutoCancel(true)
+            .setContentIntent(notificationIntent)
+            .build()
+        notificationManager.notify(1, notification)
     }
 
 

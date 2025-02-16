@@ -51,12 +51,16 @@ fun MyAppNavHost(
 }
 
 class MainActivity : ComponentActivity() {
+    private lateinit var notificationHelper: NotificationHelper
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
+        notificationHelper.createNotificationChannel()
 
         setContent {
             ComposeTutorialTheme {
+                MainScreen(notificationHelper)
                 Surface(modifier = Modifier.fillMaxSize()) {
                     val navController = rememberNavController()
                     MyAppNavHost(navController = navController)
@@ -87,8 +91,7 @@ fun MainScreen(notificationHelper: NotificationHelper) {
                 Text(text = "Enable Notifications")
             }
         }
-        //Tähän sitte kutsutaan sitä sensoriluokkaa slay
+        LightSensor()
     }
-
 }
 
