@@ -48,8 +48,19 @@ import java.io.File
 import java.io.FileOutputStream
 
 @Composable
-fun Settings(onNavigateBack: () -> Unit) {
+fun Settings(onNavigateBack: () -> Unit, notificationHelper: NotificationHelper) {
     val context = LocalContext.current
+
+    val launcher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.RequestPermission(),
+        onResult =  {isEnabled ->
+            if (isEnabled) {
+                notificationHelper.createNotification("Test notification",
+                    "This is just a test.")
+            }
+        }
+    )
+
     val userViewModel : UserViewModel = viewModel(
         factory =  UserViewModelFactory(context.applicationContext as Application)
     )
@@ -135,7 +146,19 @@ fun Settings(onNavigateBack: () -> Unit) {
                     singleLine = true,
                 )
             }
+            Spacer(modifier = Modifier.padding(10.dp))
 
+            Row(modifier = Modifier.padding(20.dp)) {
+                ExtendedFloatingActionButton(
+                    onClick = { notificationHelper.requestPermission(launcher)},
+                    modifier =  Modifier.width(200.dp).height(60.dp)
+                        .align(Alignment.CenterVertically)
+                ) {
+                    Text(text = "Enable Notifications")
+                }
+            }
+            Spacer(modifier = Modifier.padding(10.dp))
+            LightSensor()
         }
     }
 }

@@ -10,9 +10,11 @@ import android.hardware.Sensor
 import android.hardware.SensorEvent
 import android.hardware.SensorEventListener
 import android.hardware.SensorManager
+import android.util.Log
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.size
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
@@ -20,11 +22,12 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.scale
 import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.unit.dp
 import androidx.core.app.NotificationCompat
 
 @Composable
@@ -41,9 +44,13 @@ fun LightSensor() {
         override fun onSensorChanged(event: SensorEvent?) {
             event?.let {
                 currentLightLevel = it.values[0]
+                Log.d("LightSensor", "Current light level: $currentLightLevel")
 
-                if (currentLightLevel > 40.0f) {
-                    sendLightNotification(context, "Too bright!", "The light levels are above 40 lux")
+                if (currentLightLevel > 10000.0f) {
+                    sendLightNotification(
+                        context, "Too bright!",
+                        "You should go back indoors. Light > 10 000 lux"
+                    )
                 }
             }
         }
@@ -63,7 +70,8 @@ fun LightSensor() {
         Image(
             painter = getSunPainterResource(currentLightLevel),
             contentDescription = "Sun icon",
-            modifier = Modifier.scale(0.4f)
+            modifier = Modifier.size(100.dp)
+                .align(Alignment.TopCenter)
         )
     }
 
@@ -71,10 +79,10 @@ fun LightSensor() {
 
 @Composable
 fun getSunPainterResource(lightLevel: Float): Painter {
-    return if (lightLevel < 0) {
-        painterResource(id = R.drawable.twotone_wb_sunny_24)
-    } else {
+    return if (lightLevel > 10000.0f) {
         painterResource(id = R.drawable.baseline_wb_sunny_24_lights)
+    } else {
+        painterResource(id = R.drawable.twotone_wb_sunny_24)
     }
 
 }
