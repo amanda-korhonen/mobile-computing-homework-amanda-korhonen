@@ -14,6 +14,7 @@ import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.core.animation.doOnEnd
+import androidx.core.app.ActivityCompat
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import com.example.composetutorial.ui.theme.ComposeTutorialTheme
 import androidx.navigation.NavHostController
@@ -21,6 +22,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.example.composetutorial.data.UserViewModel
+import android.Manifest
 
 @Composable
 fun MyAppNavHost(
@@ -83,6 +85,16 @@ class MainActivity : ComponentActivity() {
             }
         }
         enableEdgeToEdge()
+        val permissions = arrayOf(
+            Manifest.permission.READ_MEDIA_AUDIO,
+            Manifest.permission.READ_MEDIA_VIDEO,
+            Manifest.permission.READ_MEDIA_IMAGES,
+            )
+        ActivityCompat.requestPermissions(
+            this,
+            permissions,
+            0
+        )
         notificationHelper = NotificationHelper(this)
         notificationHelper.createNotificationChannel()
 

@@ -20,7 +20,7 @@ class UserViewModel (application: Application) : AndroidViewModel(application) {
 
     init {
         viewModelScope.launch {
-            delay(3000)
+            delay(2000)
             _isReady.value = true
         }
     }
