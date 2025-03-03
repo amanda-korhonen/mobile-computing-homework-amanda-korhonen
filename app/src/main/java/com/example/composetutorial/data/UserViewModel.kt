@@ -6,11 +6,24 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 
 class UserViewModel (application: Application) : AndroidViewModel(application) {
     private val userDao: UserDao = AppDatabase.getInstance(application).userDao()
+    private val _isReady = MutableStateFlow(false)
+
+    val isReady = _isReady.asStateFlow()
+
+    init {
+        viewModelScope.launch {
+            delay(3000)
+            _isReady.value = true
+        }
+    }
 
     val userData: Flow<User?> = userDao.getUser()
 
@@ -23,7 +36,6 @@ class UserViewModel (application: Application) : AndroidViewModel(application) {
             userDao.update(user)
         }
     }
-
 
 }
 
