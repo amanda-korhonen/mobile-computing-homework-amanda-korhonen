@@ -22,6 +22,7 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.example.composetutorial.data.UserViewModel
 import android.Manifest
+import com.example.composetutorial.media.MediaReader
 
 @Composable
 fun MyAppNavHost(
@@ -62,6 +63,8 @@ class MainActivity : ComponentActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
+
         //Splash Screen
         installSplashScreen().apply {
             setKeepOnScreenCondition {

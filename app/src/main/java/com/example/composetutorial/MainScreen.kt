@@ -7,13 +7,11 @@ import androidx.compose.animation.animateContentSize
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -47,6 +45,7 @@ import coil3.compose.rememberAsyncImagePainter
 import com.example.composetutorial.data.User
 import com.example.composetutorial.data.UserViewModel
 import com.example.composetutorial.data.UserViewModelFactory
+import com.example.composetutorial.media.MediaReader
 import com.example.composetutorial.ui.theme.ComposeTutorialTheme
 import java.io.File
 
@@ -97,8 +96,13 @@ fun MessageCard(msg: Message) {
         val context = LocalContext.current
         var profilePhoto = File(context.filesDir, "profile.jpg")
         val painter = rememberAsyncImagePainter(profilePhoto)
+        val mediaReader = MediaReader(context)
+
         val userViewModel: UserViewModel = viewModel(
-            factory =  UserViewModelFactory(context.applicationContext as Application)
+            factory =  UserViewModelFactory(
+                context.applicationContext as Application,
+                mediaReader = mediaReader
+            )
         )
         userViewModel.insertUser(User(1,"User"))
 

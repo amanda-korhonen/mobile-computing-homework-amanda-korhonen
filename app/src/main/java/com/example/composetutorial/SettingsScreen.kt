@@ -45,6 +45,7 @@ import coil3.compose.rememberAsyncImagePainter
 import com.example.composetutorial.data.User
 import com.example.composetutorial.data.UserViewModel
 import com.example.composetutorial.data.UserViewModelFactory
+import com.example.composetutorial.media.MediaReader
 import java.io.File
 import java.io.FileOutputStream
 
@@ -62,8 +63,13 @@ fun Settings(onNavigateBack: () -> Unit, notificationHelper: NotificationHelper)
         }
     )
 
+    val mediaReader = MediaReader(context)
+
     val userViewModel : UserViewModel = viewModel(
-        factory =  UserViewModelFactory(context.applicationContext as Application)
+        factory =  UserViewModelFactory(
+            context.applicationContext as Application,
+            mediaReader = mediaReader
+        )
     )
     val user by userViewModel.userData.collectAsState(initial = null)
 
