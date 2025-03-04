@@ -12,6 +12,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -85,7 +86,7 @@ fun Settings(onNavigateBack: () -> Unit, notificationHelper: NotificationHelper)
 
     Scaffold { paddingValues ->
         Column (Modifier.fillMaxSize()) {
-            Row(modifier = Modifier.padding(paddingValues),
+            Row(modifier = Modifier.padding(paddingValues).fillMaxWidth(),
                 ){
                 Button(
                     onClick = onNavigateBack,
@@ -146,13 +147,11 @@ fun Settings(onNavigateBack: () -> Unit, notificationHelper: NotificationHelper)
                     singleLine = true,
                 )
             }
-            Spacer(modifier = Modifier.padding(10.dp))
 
-            Row(modifier = Modifier.padding(20.dp)) {
+            Row (modifier = Modifier.padding(100.dp, 10.dp)){
                 ExtendedFloatingActionButton(
                     onClick = { notificationHelper.requestPermission(launcher)},
                     modifier =  Modifier.width(200.dp).height(60.dp)
-                        .align(Alignment.CenterVertically)
                 ) {
                     Text(text = "Enable Notifications")
                 }

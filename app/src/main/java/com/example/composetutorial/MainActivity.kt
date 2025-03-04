@@ -1,6 +1,5 @@
 package com.example.composetutorial
 
-import SampleData
 import android.animation.ObjectAnimator
 import android.os.Bundle
 import android.view.View
@@ -38,6 +37,7 @@ fun MyAppNavHost(
         composable("mainScreen") {
             Conversation(
                 onNavigateToSettings = { navController.navigate("settings") },
+                onNavigateToMedia = {navController.navigate("mediaDisplay")},
                 SampleData.conversationSample
             )
         }
@@ -45,6 +45,12 @@ fun MyAppNavHost(
             Settings(
                 onNavigateBack = {navController.popBackStack("mainScreen",
                     false)}, notificationHelper = notificationHelper
+            )
+        }
+        composable("mediaDisplay") {
+            MediaDisplayScreen(
+                onNavigateBack = {navController.popBackStack("mainScreen",
+                    false)}
             )
         }
     }
@@ -56,6 +62,7 @@ class MainActivity : ComponentActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        //Splash Screen
         installSplashScreen().apply {
             setKeepOnScreenCondition {
                 !viewModel.isReady.value
@@ -84,6 +91,7 @@ class MainActivity : ComponentActivity() {
                 zoomY.start()
             }
         }
+
         enableEdgeToEdge()
         val permissions = arrayOf(
             Manifest.permission.READ_MEDIA_AUDIO,

@@ -7,11 +7,13 @@ import androidx.compose.animation.animateContentSize
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -21,6 +23,7 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.Settings
+import androidx.compose.material.icons.rounded.Star
 import androidx.compose.material3.Button
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
@@ -48,15 +51,17 @@ import com.example.composetutorial.ui.theme.ComposeTutorialTheme
 import java.io.File
 
 @Composable
-fun Conversation(onNavigateToSettings: () -> Unit, messages: List<Message>) {
+fun Conversation(onNavigateToSettings: () -> Unit,
+                 onNavigateToMedia: () -> Unit,
+                 messages: List<Message>) {
     Scaffold { paddingValues ->
         Box(modifier = Modifier.fillMaxSize().padding((paddingValues))) {
-            LazyColumn (modifier = Modifier.padding(paddingValues)) {
+            LazyColumn (modifier = Modifier.padding(top= 72.dp)) {
                 items(messages) { message ->
                     MessageCard(message)
                 }
             }
-
+            //Settings button
             Button(
                 onClick = onNavigateToSettings,
                 modifier = Modifier
@@ -66,6 +71,18 @@ fun Conversation(onNavigateToSettings: () -> Unit, messages: List<Message>) {
                 Icon(
                     Icons.Rounded.Settings,
                     contentDescription = "Settings button",
+                )
+            }
+            //Media button
+            Button(
+                onClick = onNavigateToMedia,
+                modifier = Modifier
+                    .align(Alignment.TopStart)
+                    .padding(16.dp)
+            ){
+                Icon(
+                    Icons.Rounded.Star,
+                    contentDescription = "Media button",
                 )
             }
         }
@@ -142,7 +159,7 @@ fun PreviewConversation() {
     ComposeTutorialTheme {
         Conversation(
             onNavigateToSettings = {},
-            SampleData.conversationSample)
+            com.example.composetutorial.SampleData.conversationSample)
     }
 }*/
 
