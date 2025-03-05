@@ -4,9 +4,8 @@ import android.content.ContentUris
 import android.content.Context
 import android.provider.MediaStore
 
-class MediaReader (
-    private val context: Context
-) {
+class MediaReader (private val context: Context) {
+
     fun getAllMediaFiles(): List<MediaFile> {
         val mediaFiles = mutableListOf<MediaFile>()
         val queryUri = MediaStore.Files.getContentUri(MediaStore.VOLUME_EXTERNAL)

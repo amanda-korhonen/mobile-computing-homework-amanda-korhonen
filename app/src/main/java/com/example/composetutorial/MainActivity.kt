@@ -7,7 +7,6 @@ import android.view.animation.OvershootInterpolator
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
-import androidx.activity.viewModels
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
@@ -22,13 +21,16 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.example.composetutorial.data.UserViewModel
 import android.Manifest
+import androidx.lifecycle.ViewModelProvider
+import com.example.composetutorial.data.UserViewModelFactory
 import com.example.composetutorial.media.MediaReader
 
 @Composable
 fun MyAppNavHost(
     modifier: Modifier = Modifier,
     navController: NavHostController = rememberNavController(),
-    notificationHelper: NotificationHelper
+    notificationHelper: NotificationHelper,
+    onRequestPermissions: () -> Unit
     ) {
     NavHost(
         modifier = modifier,
@@ -51,7 +53,7 @@ fun MyAppNavHost(
         composable("mediaDisplay") {
             MediaDisplayScreen(
                 onNavigateBack = {navController.popBackStack("mainScreen",
-                    false)}
+                    false)}, onRequestPermissions = onRequestPermissions
             )
         }
     }
@@ -59,11 +61,17 @@ fun MyAppNavHost(
 
 class MainActivity : ComponentActivity() {
     private lateinit var notificationHelper: NotificationHelper
-    private val viewModel by viewModels<UserViewModel>()
+    private lateinit var viewModel: UserViewModel
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-
+        // Initialize MediaReader
+        val mediaReader = MediaReader(applicationContext)
+        // Initialize UserViewModel with custom factory
+        viewModel = ViewModelProvider(
+            this,
+            UserViewModelFactory(application, mediaReader)
+        )[UserViewModel::class.java]
 
         //Splash Screen
         installSplashScreen().apply {
@@ -96,16 +104,7 @@ class MainActivity : ComponentActivity() {
         }
 
         enableEdgeToEdge()
-        val permissions = arrayOf(
-            Manifest.permission.READ_MEDIA_AUDIO,
-            Manifest.permission.READ_MEDIA_VIDEO,
-            Manifest.permission.READ_MEDIA_IMAGES,
-            )
-        ActivityCompat.requestPermissions(
-            this,
-            permissions,
-            0
-        )
+
         notificationHelper = NotificationHelper(this)
         notificationHelper.createNotificationChannel()
 
@@ -114,10 +113,21 @@ class MainActivity : ComponentActivity() {
                 //MainScreen(notificationHelper)
                 Surface(modifier = Modifier.fillMaxSize()) {
                     val navController = rememberNavController()
-                    MyAppNavHost(navController = navController, notificationHelper = notificationHelper)
+                    MyAppNavHost(
+                        navController = navController,
+                        notificationHelper = notificationHelper,
+                        onRequestPermissions = {requestPermissions()})
                 }
             }
         }
+    }
+    private fun requestPermissions() {
+        val permissions = arrayOf(
+            Manifest.permission.READ_MEDIA_AUDIO,
+            Manifest.permission.READ_MEDIA_VIDEO,
+            Manifest.permission.READ_MEDIA_IMAGES,
+        )
+        ActivityCompat.requestPermissions(this, permissions, 0)
     }
 }
 

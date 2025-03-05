@@ -20,7 +20,6 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.focus.focusModifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
@@ -34,7 +33,7 @@ import com.example.composetutorial.media.MediaReader
 import com.example.composetutorial.media.MediaType
 
 @Composable
-fun MediaDisplayScreen(onNavigateBack: () -> Unit) {
+fun MediaDisplayScreen(onNavigateBack: () -> Unit, onRequestPermissions: () -> Unit) {
     val context = LocalContext.current
     val  mediaReader by lazy {
         MediaReader(context) }
@@ -67,6 +66,12 @@ fun MediaDisplayScreen(onNavigateBack: () -> Unit) {
                     Icons.AutoMirrored.Filled.ArrowBack,
                     contentDescription = "Go back"
                 )
+            }
+            Button(
+                onClick = onRequestPermissions,
+                modifier = Modifier.align(Alignment.BottomCenter).padding(16.dp)
+            ) {
+                Text("Request Permissions")
             }
             Text(text = "Media",
                 color = MaterialTheme.colorScheme.secondary,
