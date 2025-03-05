@@ -12,7 +12,6 @@ import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.core.animation.doOnEnd
-import androidx.core.app.ActivityCompat
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import com.example.composetutorial.ui.theme.ComposeTutorialTheme
 import androidx.navigation.NavHostController
@@ -20,10 +19,12 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.example.composetutorial.data.UserViewModel
-import android.Manifest
+import androidx.activity.result.ActivityResultLauncher
 import androidx.lifecycle.ViewModelProvider
 import com.example.composetutorial.data.UserViewModelFactory
 import com.example.composetutorial.media.MediaReader
+import android.Manifest
+import androidx.activity.result.contract.ActivityResultContracts
 
 @Composable
 fun MyAppNavHost(
@@ -53,7 +54,8 @@ fun MyAppNavHost(
         composable("mediaDisplay") {
             MediaDisplayScreen(
                 onNavigateBack = {navController.popBackStack("mainScreen",
-                    false)}, onRequestPermissions = onRequestPermissions
+                    false)},
+                onRequestPermissions = onRequestPermissions
             )
         }
     }
@@ -62,6 +64,12 @@ fun MyAppNavHost(
 class MainActivity : ComponentActivity() {
     private lateinit var notificationHelper: NotificationHelper
     private lateinit var viewModel: UserViewModel
+    private lateinit var multiplePermissionResultLauncher: ActivityResultLauncher<Array<String>>
+    private val permissionsToRequest  = arrayOf(
+        Manifest.permission.READ_MEDIA_AUDIO,
+        Manifest.permission.READ_MEDIA_VIDEO,
+        Manifest.permission.READ_MEDIA_IMAGES,
+    )
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -108,6 +116,17 @@ class MainActivity : ComponentActivity() {
         notificationHelper = NotificationHelper(this)
         notificationHelper.createNotificationChannel()
 
+        multiplePermissionResultLauncher = registerForActivityResult(
+            ActivityResultContracts.RequestMultiplePermissions()
+        ) { perms ->
+            permissionsToRequest.forEach { permission ->
+                viewModel.onPermissionResult(
+                    permission = permission,
+                    isGranted = perms[permission] == true
+                )
+            }
+        }
+
         setContent {
             ComposeTutorialTheme {
                 //MainScreen(notificationHelper)
@@ -122,14 +141,7 @@ class MainActivity : ComponentActivity() {
         }
     }
     private fun requestPermissions() {
-        val permissions = arrayOf(
-            Manifest.permission.READ_MEDIA_AUDIO,
-            Manifest.permission.READ_MEDIA_VIDEO,
-            Manifest.permission.READ_MEDIA_IMAGES,
-        )
-        ActivityCompat.requestPermissions(this, permissions, 0)
+        multiplePermissionResultLauncher.launch(permissionsToRequest)
     }
 }
-
-
 

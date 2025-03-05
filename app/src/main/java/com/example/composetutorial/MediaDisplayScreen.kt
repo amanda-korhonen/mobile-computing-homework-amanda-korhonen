@@ -33,7 +33,8 @@ import com.example.composetutorial.media.MediaReader
 import com.example.composetutorial.media.MediaType
 
 @Composable
-fun MediaDisplayScreen(onNavigateBack: () -> Unit, onRequestPermissions: () -> Unit) {
+fun MediaDisplayScreen(onNavigateBack: () -> Unit,
+                       onRequestPermissions: () -> Unit) {
     val context = LocalContext.current
     val  mediaReader by lazy {
         MediaReader(context) }
@@ -79,6 +80,7 @@ fun MediaDisplayScreen(onNavigateBack: () -> Unit, onRequestPermissions: () -> U
                 fontSize = 20.sp,
                 modifier = Modifier.padding(paddingValues)
             )
+
         }
     }
 }

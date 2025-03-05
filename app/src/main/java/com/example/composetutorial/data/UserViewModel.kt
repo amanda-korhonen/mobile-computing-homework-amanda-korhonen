@@ -2,6 +2,7 @@ package com.example.composetutorial.data
 
 import android.app.Application
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.AndroidViewModel
@@ -23,6 +24,8 @@ class UserViewModel (application: Application, private val mediaReader: MediaRea
     //Splash screen
     private val _isReady = MutableStateFlow(false)
 
+    val visiblePermissionDialogQueue = mutableStateListOf<String>()
+
     var files by mutableStateOf(listOf<MediaFile>())
         private set
 
@@ -35,6 +38,16 @@ class UserViewModel (application: Application, private val mediaReader: MediaRea
         }
         viewModelScope.launch (Dispatchers.IO){
             files = mediaReader.getAllMediaFiles()
+        }
+    }
+    fun dismissDialog() {
+        visiblePermissionDialogQueue.removeFirst()
+    }
+
+    fun onPermissionResult(permission: String, isGranted: Boolean
+    ) {
+        if(!isGranted && !visiblePermissionDialogQueue.contains(permission)) {
+            visiblePermissionDialogQueue.add(permission)
         }
     }
 
