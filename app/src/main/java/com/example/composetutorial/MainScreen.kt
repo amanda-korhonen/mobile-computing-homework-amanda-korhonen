@@ -157,16 +157,6 @@ fun MessageCard(msg: Message) {
     }
 }
 
-/*@Preview
-@Composable
-fun PreviewConversation() {
-    ComposeTutorialTheme {
-        Conversation(
-            onNavigateToSettings = {},
-            com.example.composetutorial.SampleData.conversationSample)
-    }
-}*/
-
 @Preview(name = "Light Mode")
 @Preview(
     uiMode = Configuration.UI_MODE_NIGHT_YES,

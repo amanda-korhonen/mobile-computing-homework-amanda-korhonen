@@ -1,6 +1,5 @@
 package com.example.composetutorial
 
-import android.app.Application
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
@@ -16,36 +15,51 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SnackbarHost
+import androidx.compose.material3.SnackbarHostState
+import androidx.compose.runtime.collectAsState
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.lifecycle.viewmodel.compose.viewModel
 import coil3.compose.AsyncImage
 import com.example.composetutorial.data.UserViewModel
-import com.example.composetutorial.data.UserViewModelFactory
 import com.example.composetutorial.media.MediaFile
 import com.example.composetutorial.media.MediaReader
 import com.example.composetutorial.media.MediaType
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.rememberCoroutineScope
+import kotlinx.coroutines.launch
+
 
 @Composable
 fun MediaDisplayScreen(onNavigateBack: () -> Unit,
-                       onRequestPermissions: () -> Unit) {
+                       onRequestPermissions: () -> Unit,
+                       snackBarHostState: SnackbarHostState,
+                       userViewModel: UserViewModel) {
     val context = LocalContext.current
-    val  mediaReader by lazy {
-        MediaReader(context) }
+    val  mediaReader by lazy { MediaReader(context) }
 
-    val userViewModel: UserViewModel = viewModel(
-        factory =  UserViewModelFactory(
-            context.applicationContext as Application,
-            mediaReader = mediaReader
-        )
-    )
-    Scaffold { paddingValues ->
+    val snackbarMessage by userViewModel.snackbarMessage.collectAsState(null)
+    val coroutineScope = rememberCoroutineScope()
+
+    LaunchedEffect(snackbarMessage) {
+        println("Snackbar received: $snackbarMessage") // Debug Log
+        snackbarMessage?.let { message ->
+            coroutineScope.launch {
+                println("Showing snackbar: $message") // Debug Log
+                snackBarHostState.showSnackbar(message)
+            }
+            userViewModel.showSnackbarMessage(null) // Reset the message after showing
+        }
+    }
+
+    Scaffold (snackbarHost = { SnackbarHost(snackBarHostState) }){ paddingValues ->
         Box(Modifier.fillMaxSize().padding(paddingValues),
             contentAlignment = Alignment.TopCenter) {
             LazyColumn(modifier = Modifier.fillMaxSize().padding(paddingValues)) {

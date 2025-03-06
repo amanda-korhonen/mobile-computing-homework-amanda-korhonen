@@ -15,21 +15,22 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 
 class UserViewModel (application: Application, private val mediaReader: MediaReader) :
     AndroidViewModel(application) {
     private val userDao: UserDao = AppDatabase.getInstance(application).userDao()
-    //Splash screen
     private val _isReady = MutableStateFlow(false)
-
     val visiblePermissionDialogQueue = mutableStateListOf<String>()
-
     var files by mutableStateOf(listOf<MediaFile>())
         private set
-
     val isReady = _isReady.asStateFlow()
+    //private var permissionDeniedCount = 0
+    private val permissionDeniedCountMap = mutableMapOf<String, Int>()
+    private val _snackbarMessage = MutableStateFlow<String?>(null)
+    val snackbarMessage: StateFlow<String?> = _snackbarMessage
 
     init {
         viewModelScope.launch {
@@ -40,16 +41,36 @@ class UserViewModel (application: Application, private val mediaReader: MediaRea
             files = mediaReader.getAllMediaFiles()
         }
     }
-    fun dismissDialog() {
-        visiblePermissionDialogQueue.removeFirst()
-    }
-
+    //Permission things :)
     fun onPermissionResult(permission: String, isGranted: Boolean
     ) {
         if(!isGranted && !visiblePermissionDialogQueue.contains(permission)) {
             visiblePermissionDialogQueue.add(permission)
+            //permissionDeniedCount++
+            permissionDeniedCountMap[permission] = (permissionDeniedCountMap[permission] ?: 0) + 1
         }
     }
+    fun getPermissionDeniedMessage(): String {
+        val deniedPermissions = permissionDeniedCountMap.filter { it.value > 0 }
+        if (deniedPermissions.isEmpty()) return ""
+
+        val messages = deniedPermissions.map { (permission, count) ->
+            when (count) {
+                1 -> "$permission denied. Please allow it to proceed either here or in Settings."
+                2 -> "$permission denied twice. Please allow it to continue using the app."
+                else -> "$permission denied multiple times. You need to set it in app settings."
+            }
+        }
+        return messages.joinToString("\n")
+    }
+
+    fun showSnackbarMessage(message: String?) {
+        viewModelScope.launch {
+            println("Snackbar message set: $message") // Debug Log
+            _snackbarMessage.emit(message)
+        }
+    }
+
 
     //user data
     val userData: Flow<User?> = userDao.getUser()

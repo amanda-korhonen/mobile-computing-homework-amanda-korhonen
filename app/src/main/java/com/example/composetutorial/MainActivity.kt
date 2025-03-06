@@ -25,13 +25,17 @@ import com.example.composetutorial.data.UserViewModelFactory
 import com.example.composetutorial.media.MediaReader
 import android.Manifest
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.compose.material3.SnackbarHostState
 
 @Composable
 fun MyAppNavHost(
     modifier: Modifier = Modifier,
     navController: NavHostController = rememberNavController(),
     notificationHelper: NotificationHelper,
-    onRequestPermissions: () -> Unit
+    onRequestPermissions: () -> Unit,
+    snackBarHostState: SnackbarHostState,
+    userViewModel: UserViewModel
+
     ) {
     NavHost(
         modifier = modifier,
@@ -55,7 +59,9 @@ fun MyAppNavHost(
             MediaDisplayScreen(
                 onNavigateBack = {navController.popBackStack("mainScreen",
                     false)},
-                onRequestPermissions = onRequestPermissions
+                onRequestPermissions = onRequestPermissions,
+                snackBarHostState = snackBarHostState,
+                userViewModel = userViewModel
             )
         }
     }
@@ -76,10 +82,10 @@ class MainActivity : ComponentActivity() {
         // Initialize MediaReader
         val mediaReader = MediaReader(applicationContext)
         // Initialize UserViewModel with custom factory
-        viewModel = ViewModelProvider(
-            this,
-            UserViewModelFactory(application, mediaReader)
+        viewModel = ViewModelProvider(this, UserViewModelFactory(application, mediaReader)
         )[UserViewModel::class.java]
+
+        val snackBarHostState = SnackbarHostState()
 
         //Splash Screen
         installSplashScreen().apply {
@@ -120,22 +126,25 @@ class MainActivity : ComponentActivity() {
             ActivityResultContracts.RequestMultiplePermissions()
         ) { perms ->
             permissionsToRequest.forEach { permission ->
-                viewModel.onPermissionResult(
-                    permission = permission,
-                    isGranted = perms[permission] == true
-                )
+                val isGranted = perms[permission] == true
+                viewModel.onPermissionResult(permission, isGranted)
+                if (!isGranted) {
+                    viewModel.showSnackbarMessage(viewModel.getPermissionDeniedMessage())
+                }
             }
         }
 
         setContent {
             ComposeTutorialTheme {
-                //MainScreen(notificationHelper)
                 Surface(modifier = Modifier.fillMaxSize()) {
                     val navController = rememberNavController()
                     MyAppNavHost(
                         navController = navController,
                         notificationHelper = notificationHelper,
-                        onRequestPermissions = {requestPermissions()})
+                        onRequestPermissions = {requestPermissions()},
+                        snackBarHostState = snackBarHostState,
+                        userViewModel = viewModel
+                    )
                 }
             }
         }
@@ -144,4 +153,3 @@ class MainActivity : ComponentActivity() {
         multiplePermissionResultLauncher.launch(permissionsToRequest)
     }
 }
-
