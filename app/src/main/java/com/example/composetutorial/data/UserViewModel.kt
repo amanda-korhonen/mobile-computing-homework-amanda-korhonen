@@ -27,7 +27,6 @@ class UserViewModel (application: Application, private val mediaReader: MediaRea
     var files by mutableStateOf(listOf<MediaFile>())
         private set
     val isReady = _isReady.asStateFlow()
-    //private var permissionDeniedCount = 0
     private val permissionDeniedCountMap = mutableMapOf<String, Int>()
     private val _snackbarMessage = MutableStateFlow<String?>(null)
     val snackbarMessage: StateFlow<String?> = _snackbarMessage
@@ -46,10 +45,12 @@ class UserViewModel (application: Application, private val mediaReader: MediaRea
     ) {
         if(!isGranted && !visiblePermissionDialogQueue.contains(permission)) {
             visiblePermissionDialogQueue.add(permission)
-            //permissionDeniedCount++
             permissionDeniedCountMap[permission] = (permissionDeniedCountMap[permission] ?: 0) + 1
+            println("Permission $permission denied. Count: ${permissionDeniedCountMap[permission]}") // Debug Log
         }
     }
+
+    //Doesn't work as intended because shows only the first message all the times.
     fun getPermissionDeniedMessage(): String {
         val deniedPermissions = permissionDeniedCountMap.filter { it.value > 0 }
         if (deniedPermissions.isEmpty()) return ""
@@ -66,11 +67,10 @@ class UserViewModel (application: Application, private val mediaReader: MediaRea
 
     fun showSnackbarMessage(message: String?) {
         viewModelScope.launch {
-            println("Snackbar message set: $message") // Debug Log
+            //println("Snackbar message set: $message") // Debug Log
             _snackbarMessage.emit(message)
         }
     }
-
 
     //user data
     val userData: Flow<User?> = userDao.getUser()

@@ -30,7 +30,6 @@ import androidx.compose.ui.unit.sp
 import coil3.compose.AsyncImage
 import com.example.composetutorial.data.UserViewModel
 import com.example.composetutorial.media.MediaFile
-import com.example.composetutorial.media.MediaReader
 import com.example.composetutorial.media.MediaType
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.rememberCoroutineScope
@@ -42,8 +41,7 @@ fun MediaDisplayScreen(onNavigateBack: () -> Unit,
                        onRequestPermissions: () -> Unit,
                        snackBarHostState: SnackbarHostState,
                        userViewModel: UserViewModel) {
-    val context = LocalContext.current
-    val  mediaReader by lazy { MediaReader(context) }
+    LocalContext.current
 
     val snackbarMessage by userViewModel.snackbarMessage.collectAsState(null)
     val coroutineScope = rememberCoroutineScope()
@@ -52,7 +50,7 @@ fun MediaDisplayScreen(onNavigateBack: () -> Unit,
         println("Snackbar received: $snackbarMessage") // Debug Log
         snackbarMessage?.let { message ->
             coroutineScope.launch {
-                println("Showing snackbar: $message") // Debug Log
+                //println("Showing snackbar: $message") // Debug Log
                 snackBarHostState.showSnackbar(message)
             }
             userViewModel.showSnackbarMessage(null) // Reset the message after showing
